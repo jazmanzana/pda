@@ -1,8 +1,6 @@
 #!/usr/bin/python
 
-import socket, time, sys, requests, urllib.request
-
-#creo el socket object
+import socket, sys, urllib
 
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -21,32 +19,31 @@ serversocket.listen() #maximum number of queued connections 0-5: BACKLOG
 while True:
     try:
         print("Esperando conexiones. Para terminar presione CRTL-C.")
-        #establece la conexion
         conn, addr = serversocket.accept()
         print("Establecimos conexion con %s." % str(addr))
         print("El valor de conn es %s." % str(conn.getsockname()))
 
+
         my_get = urllib.request.urlopen("http://example.com/")
+        my_read_get = my_get.read()
         request = conn.recv(9999)
-        #print(("Request value and length {} \n {}.").format(request.decode(), len(request)))
 
-        #import code
-        #code.interact(local=locals())
+        #escribir funcion para volver a generar esta linea (!)
+        print ("msg: ", my_get.msg)
+        print ("version: ", my_get.version)
+        print ("status: ", my_get.status)
 
-        #print("Read: ", my_get.read(300).decode('utf-8'))
-
-        conn.sendall(b'HTTP/1.0 200 OK\n')
-        conn.sendall(b'Content-Type: text/html\n')
+        conn.sendall(b'HTTP/1.0 200 OK\n') # para suplantar esta (!)
+        conn.sendall(bytes(my_get.headers))
         conn.sendall(b'\r\n')
-        conn.sendall(b'xxxxxxxxx')
-        conn.sendall(b'<html><body>asdasd</body></html>')
+        conn.sendall(my_read_get)
 
         conn.close()
 
     except KeyboardInterrupt:
         print("\r\n")
         print("Socket cerrado a pedido del cliente.")
-        sys.exit() #aca no pones conn.close() porque no estaria definido conn en algunos casos
+        sys.exit()
     except Exception as e:
         print(e)
 
