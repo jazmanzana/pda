@@ -1,0 +1,3 @@
+* primera línea antes de los headers
+* intentar mostrar cosas sin un receive de parte del server (wrong)
+* tipos de datos que se reciben y mandan
