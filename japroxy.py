@@ -3,7 +3,7 @@
 import socket, sys, urllib.request
 
 def response_first_line(version, status, message):
-    return ('HTTP/{}.{} {} {}\n').format(version[:1], version[1:], status, message)
+    return ('HTTP/{}.{} {} {}\r\n').format(version[:1], version[1:], status, message)
 
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -26,13 +26,11 @@ while True:
         print("El valor de conn es %s." % str(conn.getsockname()))
 
 
-        my_get = urllib.request.urlopen("http://example.com/")
+        my_get = urllib.request.urlopen("http://www.python.org/")
         my_get_content = my_get.read()
         request = conn.recv(9999)
 
-        conn.sendall(response_first_line(str(my_get.version), my_get.status, my_get.msg).encode())
-        conn.sendall(bytes(my_get.headers))
-        conn.sendall(b'\r\n')
+        conn.sendall(response_first_line(str(my_get.version),my_get.status,my_get.msg).encode()+bytes(my_get.headers)+b'\r\n\r\n')
         conn.sendall(my_get_content)
 
         conn.close()
