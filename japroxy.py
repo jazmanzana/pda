@@ -1,19 +1,21 @@
 #!/usr/bin/python
 
-import socket, sys, urllib
+import socket, sys, urllib.request
+
+def response_first_line(version, status, message):
+    return ('HTTP/{}.{} {} {}\n').format(version[:1], version[1:], status, message)
 
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 host = ""
 port = 8080 # si pones un puerto menor al 1024 tenes que correr el script como root
 
-
 # para evitar el address already in use: el puerto se libera y se reusa
 serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 #hago el bind para que se quede escuchando en el puerto que yo le digo
 serversocket.bind((host, port))
-serversocket.listen() #maximum number of queued connections 0-5: BACKLOG
+serversocket.listen(5) #maximum number of queued connections 0-5: BACKLOG
 
 
 while True:
@@ -25,18 +27,13 @@ while True:
 
 
         my_get = urllib.request.urlopen("http://example.com/")
-        my_read_get = my_get.read()
+        my_get_content = my_get.read()
         request = conn.recv(9999)
 
-        #escribir funcion para volver a generar esta linea (!)
-        print ("msg: ", my_get.msg)
-        print ("version: ", my_get.version)
-        print ("status: ", my_get.status)
-
-        conn.sendall(b'HTTP/1.0 200 OK\n') # para suplantar esta (!)
+        conn.sendall(response_first_line(str(my_get.version), my_get.status, my_get.msg).encode())
         conn.sendall(bytes(my_get.headers))
         conn.sendall(b'\r\n')
-        conn.sendall(my_read_get)
+        conn.sendall(my_get_content)
 
         conn.close()
 
@@ -46,3 +43,5 @@ while True:
         sys.exit()
     except Exception as e:
         print(e)
+
+
