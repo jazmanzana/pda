@@ -1,3 +1,28 @@
-* primera línea antes de los headers
 * intentar mostrar cosas sin un receive de parte del server (wrong)
 * tipos de datos que se reciben y mandan
+* why exactly is golang better/best for network programming?
+
+# operations  |  poll  |  select   | epoll
+10            |   0.61 |    0.73   | 0.41
+100           |   2.9  |    3.0    | 0.42
+1000          |  35    |   35      | 0.53
+10000         | 990    |  930      | 0.66
+
+from > The Linux Programming Interface.  Michael Kerrisk.
+
+ Acá todas las desventajas de usar "select": https://www.ulduzsoft.com/2014/01/select-poll-epoll-practical-difference-for-system-architects/
+
+
+
+
+ ******
+ The C10K problem
+ http://www.kegel.com/c10k.html#top
+ benchmarks de diferentes networks applications
+ http://bulk.fefe.de/scalability/
+
+ **** which framework should I use?
+ https://stackoverflow.com/questions/13941903/when-to-use-tornado-when-to-use-twisted-cyclone-gevent-other
+ NUMERITOS DE PERFORMANCE: http://klen.github.io/py-frameworks-bench/
+ **** why is tornado my best option?
+ https://stackoverflow.com/questions/4212877/when-and-how-to-use-tornado-when-is-it-useless
