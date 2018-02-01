@@ -1,6 +1,9 @@
 #!/usr/bin/python
 
 import socket, sys, urllib.request
+from tornado.options import define, options
+
+define("host_and_port", default=8080, help="Run on the given ip and port.")
 
 def response_first_line(version, status, message):
     return ('HTTP/{}.{} {} {}\r\n').format(version[:1], version[1:], status, message)
@@ -9,6 +12,8 @@ serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 host = ""
 port = 8080 # si pones un puerto menor al 1024 tenes que correr el script como root
+
+
 
 # para evitar el address already in use: el puerto se libera y se reusa
 serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
