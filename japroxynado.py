@@ -1,19 +1,34 @@
-import tornado.ioloop, tornado.web, urllib.request
+import tornado.ioloop, tornado.web, urllib.request, signal, logging, tornado.options
+
+# funciones para cerrar el server con ctrl+C y libreria signal (sin try... except...)
+is_closing = False
+
+def signal_handler(signal, frame): #convencion de signal
+    global is_closing
+    logging.info('Saliendo...')
+    is_closing = True
+
+def try_exit():
+    global is_closing
+    if is_closing:
+        tornado.ioloop.IOLoop.instance().stop() #linea maestra
+        logging.info('Server cerrado.')
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
-        my_get = urllib.request.urlopen("http://www.python.org/")
+        my_get = urllib.request.urlopen("http://www.google.com/")
         my_get_content = my_get.read()
         self.write(my_get_content)
-        print("my get content is: ", my_get_content)
 
 
-def make_app():
-    return tornado.web.Application([
+application = tornado.web.Application([
         (r"/", MainHandler),
     ])
 
 if __name__ == "__main__":
-    app = make_app()
-    app.listen(8888)
-    tornado.ioloop.IOLoop.current().start()
+    tornado.options.parse_command_line()
+    signal.signal(signal.SIGINT, signal_handler)
+    application.listen(8888)
+    #explain PeriodicCallback
+    tornado.ioloop.PeriodicCallback(try_exit, 100).start()
+    tornado.ioloop.IOLoop.instance().start() #instance vs current
