@@ -1,6 +1,7 @@
 from tornado.httpclient import AsyncHTTPClient
 from tornado.concurrent import Future
 from tornado.ioloop import IOLoop
+import sys
 
 def fetch_future_asynchronicly():
     try:
@@ -13,9 +14,20 @@ def fetch_future_asynchronicly():
     except Exception as e:
         print ("Error: %s" % e)
 
-response = IOLoop.current().run_sync(fetch_future_asynchronicly)
+count = 0
+while True:
+    try:
+        response = IOLoop.current().run_sync(fetch_future_asynchronicly)
+        count += 1
+        print ("Count goes {}.".format(count))
+    except KeyboardInterrupt:
+        print ("\r\n")
+        print ("Cerrando a pedido tuyo.")
+        sys.exit()
+    except Exception as e:
+        print ("Error: %s" % e)
+
 #run_sync toma la funcion, no la tenes que llamar desde ahi
-print("my response would be: %s" % response.body)
 
 # try:
 #     response = AsyncHTTPClient().fetch("127.0.0.1:8888")
